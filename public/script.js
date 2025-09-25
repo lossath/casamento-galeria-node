@@ -2,7 +2,7 @@
 // CONFIGURAÇÕES GLOBAIS
 // ===================================================================
 
-const API_URL = 'https://galeria-casamento-gratis.onrender.com';
+const API_URL = 'https://galeria-casamento-ajestendar.onrender.com'; 
 const ITEMS_PER_PAGE = 20;               
 
 let allMedia = [];       
