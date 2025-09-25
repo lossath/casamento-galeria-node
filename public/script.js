@@ -2,12 +2,13 @@
 // CONFIGURAÇÕES GLOBAIS
 // ===================================================================
 
-const API_URL = 'http://localhost:3000'; // ENDEREÇO DO SERVIDOR NODE.JS (Mudar na hospedagem!)
-const ITEMS_PER_PAGE = 20;               // Quantos itens mostrar por clique em "Ver Mais"
+// O servidor Node.js (que fará a ponte com o Cloudinary)
+const API_URL = 'http://localhost:3000'; 
+const ITEMS_PER_PAGE = 20;               
 
-let allMedia = [];       // Armazena a lista COMPLETA de arquivos (nomes de arquivo do servidor)
-let currentIndex = 0;    // Índice de controle da paginação (onde paramos de exibir)
-let currentMediaList = []; // Lista de TODAS as URLs atualmente carregadas na galeria
+let allMedia = [];       
+let currentIndex = 0;    
+let currentMediaList = []; // Lista de TODAS as URLs carregadas no front-end
 let currentMediaIndex = -1; // O índice da mídia atualmente aberta no modal
 
 // ===================================================================
@@ -21,13 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const galeria = document.getElementById('galeria-convidados');
     const uploadFeedback = document.getElementById('uploadFeedback');
     const verMaisBtn = document.getElementById('verMaisBtn');
+    const downloadBtn = document.getElementById('downloadBtn'); // Novo
     
     // Elementos de Upload
     const fileInput = document.getElementById('file-upload');
     const fileLabel = document.getElementById('file-label');
-
-    // Capturando o elemento do botão de download
-const downloadBtn = document.getElementById('downloadBtn'); 
 
     // Elementos do Modal (Lightbox)
     const modal = document.getElementById('imageModal');
@@ -38,6 +37,52 @@ const downloadBtn = document.getElementById('downloadBtn');
     const nextBtn = document.getElementsByClassName('next-btn')[0];
     const backToTopBtn = document.getElementById('backToTopBtn');
 
+
+    // -------------------------------------------------------------------
+    // FUNÇÕES DE UTILIDADE
+    // -------------------------------------------------------------------
+    
+    // Função para abrir o modal e carregar a mídia
+    function openModal(url, isVideo) {
+        modal.style.display = "block";
+        
+        // Esconde e pausa o que não for ser exibido
+        modalImg.style.display = 'none';
+        modalVideo.style.display = 'none';
+        modalVideo.pause(); 
+
+        if (isVideo) {
+            modalVideo.src = url;
+            modalVideo.style.display = 'block';
+            modalVideo.play();
+        } else {
+            modalImg.src = url;
+            modalImg.style.display = 'block';
+        }
+
+        // Atualiza o botão de download
+        downloadBtn.href = url;
+        const fileName = url.substring(url.lastIndexOf('/') + 1);
+        downloadBtn.setAttribute('download', fileName);
+    }
+    
+    // Função de navegação do carrossel
+    function navigateCarousel(direction) {
+        let newIndex = currentMediaIndex + direction;
+
+        if (newIndex < 0) {
+            newIndex = currentMediaList.length - 1;
+        } else if (newIndex >= currentMediaList.length) {
+            newIndex = 0;
+        }
+        
+        currentMediaIndex = newIndex;
+        
+        const nextMediaUrl = currentMediaList[currentMediaIndex];
+        const isVideo = nextMediaUrl.includes('/video/upload/');
+        
+        openModal(nextMediaUrl, isVideo);
+    }
 
     // -------------------------------------------------------------------
     // A. FEEDBACK DE SELEÇÃO DE ARQUIVOS
@@ -83,7 +128,6 @@ const downloadBtn = document.getElementById('downloadBtn');
                 uploadFeedback.style.color = '#4CAF50';
                 form.reset(); 
 
-                // Reset do texto do botão de seleção
                 fileLabel.textContent = 'Selecionar Fotos e Vídeos'; 
                 
                 // Faz a mensagem desaparecer após 5 segundos
@@ -105,44 +149,17 @@ const downloadBtn = document.getElementById('downloadBtn');
 
 
     // -------------------------------------------------------------------
-    // C. FUNÇÕES DE CARREGAMENTO, PAGINAÇÃO E EXIBIÇÃO
+    // C. FUNÇÕES DE CARREGAMENTO E PAGINAÇÃO
     // -------------------------------------------------------------------
     
-// Função utilitária para abrir o modal e carregar a mídia (ATUALIZADA)
-function openModal(url, isVideo) {
-    modal.style.display = "block";
-    
-    modalImg.style.display = 'none';
-    modalVideo.style.display = 'none';
-    modalVideo.pause(); 
-
-    if (isVideo) {
-        modalVideo.src = url;
-        modalVideo.style.display = 'block';
-        modalVideo.play();
-    } else {
-        modalImg.src = url;
-        modalImg.style.display = 'block';
-    }
-    
-    // --- NOVO: ATUALIZA O LINK DE DOWNLOAD ---
-    downloadBtn.href = url;
-    // O atributo 'download' faz o navegador salvar o arquivo com o nome original
-    // Pegamos o nome do arquivo no final da URL
-    const fileName = url.substring(url.lastIndexOf('/') + 1);
-    downloadBtn.setAttribute('download', fileName);
-    // ------------------------------------------
-}
-
-
     function inicializarGaleria() {
         galeria.innerHTML = 'Carregando galeria...';
         verMaisBtn.style.display = 'none';
         
         fetch(API_URL + '/api/galeria')
             .then(response => response.json())
-            .then(arquivos => {
-                allMedia = arquivos; // Salva a lista completa (nomes de arquivo)
+            .then(urls => {
+                allMedia = urls; // Recebe a lista de URLs completas do Cloudinary
                 currentIndex = 0; // Reseta o índice
                 galeria.innerHTML = ''; 
                 currentMediaList = []; // Limpa a lista de URLs visíveis
@@ -164,12 +181,11 @@ function openModal(url, isVideo) {
         const endIndex = currentIndex + ITEMS_PER_PAGE;
         const itemsToShow = allMedia.slice(currentIndex, endIndex);
         
-        itemsToShow.forEach(nomeArquivo => {
+        itemsToShow.forEach(url => { // 'url' é o link completo do Cloudinary
             let elemento;
-            const url = API_URL + '/uploads/' + nomeArquivo; 
             
-            const isImage = nomeArquivo.match(/\.(jpe?g|png|gif|webp)$/i);
-            const isVideo = nomeArquivo.match(/\.(mp4|mov)$/i);
+            const isImage = url.includes('/image/upload/');
+            const isVideo = url.includes('/video/upload/');
 
             if (isImage) {
                 elemento = document.createElement('img');
@@ -187,10 +203,7 @@ function openModal(url, isVideo) {
                 
                 // Adiciona o evento de clique para abrir o modal
                 elemento.onclick = function() {
-                    // Encontra o índice da mídia clicada
                     currentMediaIndex = currentMediaList.indexOf(this.src);
-
-                    // Abre o modal
                     openModal(this.src, isVideo);
                 }
             }
@@ -206,7 +219,7 @@ function openModal(url, isVideo) {
         }
     }
     
-    // Inicia a galeria na primeira carga da página
+    // Inicializa a galeria na primeira carga da página
     inicializarGaleria();
 
     // Listener do botão "Ver Mais Fotos"
@@ -214,33 +227,11 @@ function openModal(url, isVideo) {
 
 
     // -------------------------------------------------------------------
-    // D. LÓGICA DO CARROSSEL (NAVEGAÇÃO)
+    // D. LÓGICA DO CARROSSEL E MODAL
     // -------------------------------------------------------------------
-    
-    function navigateCarousel(direction) {
-        let newIndex = currentMediaIndex + direction;
-
-        // Trata o looping (vai do último para o primeiro ou vice-versa)
-        if (newIndex < 0) {
-            newIndex = currentMediaList.length - 1;
-        } else if (newIndex >= currentMediaList.length) {
-            newIndex = 0;
-        }
-        
-        currentMediaIndex = newIndex;
-        
-        const nextMediaUrl = currentMediaList[currentMediaIndex];
-        const isVideo = nextMediaUrl.match(/\.(mp4|mov)$/i);
-        
-        openModal(nextMediaUrl, isVideo);
-    }
 
     prevBtn.addEventListener('click', () => navigateCarousel(-1));
     nextBtn.addEventListener('click', () => navigateCarousel(1));
-
-    // -------------------------------------------------------------------
-    // E. LÓGICA DO FECHAMENTO DO MODAL
-    // -------------------------------------------------------------------
 
     // Lógica de fechamento ao clicar no X
     closeModalBtn.onclick = function() {
@@ -257,7 +248,7 @@ function openModal(url, isVideo) {
     }
     
     // -------------------------------------------------------------------
-    // F. LÓGICA DO BOTÃO VOLTAR AO TOPO
+    // E. LÓGICA DO BOTÃO VOLTAR AO TOPO
     // -------------------------------------------------------------------
 
     // 1. Mostrar/Esconder o botão na rolagem

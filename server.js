@@ -1,69 +1,91 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const fs = require('fs');
 const path = require('path');
+// Carrega as variáveis do .env para o ambiente local
+require('dotenv').config(); 
+
+// 1. Configuração do Cloudinary
+const cloudinary = require('cloudinary').v2;
+
+// O Render usará essas variáveis de ambiente que definiremos depois
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true, // Garante que as URLs geradas sejam HTTPS
+});
 
 const app = express();
 const port = 3000;
 
-// Diretório onde os arquivos serão salvos (uploads)
-const UPLOAD_DIR = path.join(__dirname, 'uploads');
+// Configuração do Multer para armazenar em MEMÓRIA (buffer)
+// Isso evita usar o disco local (que não é persistente no Render Free)
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // MIDDLEWARE: Permite comunicação entre front e back-end
 app.use(cors());
 
-// MIDDLEWARE: Serve arquivos estáticos da pasta 'public' (seu HTML/CSS/JS)
-// Isso permite acessar http://localhost:3000/index.html
+// MIDDLEWARE: Serve arquivos estáticos da pasta 'public'
 app.use(express.static(path.join(__dirname, 'public'))); 
 
-// Configuração do Multer para salvar os arquivos
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Verifica e cria a pasta 'uploads' se ela não existir
-        if (!fs.existsSync(UPLOAD_DIR)) {
-            fs.mkdirSync(UPLOAD_DIR);
-        }
-        cb(null, UPLOAD_DIR);
-    },
-    filename: (req, file, cb) => {
-        // Renomeia o arquivo para evitar conflitos (ex: "photos-1748293849.jpg")
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname).toLowerCase());
+// ------------------------------------------------------------------
+// ROTA 1: POST /upload - Recebe arquivos e envia para o Cloudinary
+// ------------------------------------------------------------------
+app.post('/upload', upload.array('photos', 20), async (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
+    }
+
+    const uploadPromises = req.files.map(file => {
+        // Converte o buffer para base64, formato que o Cloudinary aceita
+        const base64 = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+        
+        // Se for vídeo (mp4, mov), o Cloudinary precisa saber
+        const resourceType = file.mimetype.startsWith('video') ? 'video' : 'image';
+
+        return cloudinary.uploader.upload(base64, {
+            resource_type: resourceType,
+            folder: "galeria-casamento", // Nome da pasta na sua conta Cloudinary
+            overwrite: false,
+        });
+    });
+
+    try {
+        const results = await Promise.all(uploadPromises);
+        console.log(`Enviados ${results.length} arquivos para o Cloudinary.`);
+        res.json({ message: 'Uploads concluídos com sucesso!', count: results.length });
+    } catch (error) {
+        console.error('Erro ao enviar para o Cloudinary:', error);
+        res.status(500).json({ error: 'Falha ao salvar a mídia na nuvem.' });
     }
 });
 
-const upload = multer({ storage: storage });
+// ------------------------------------------------------------------
+// ROTA 2: GET /api/galeria - Lista os arquivos do Cloudinary
+// ------------------------------------------------------------------
+app.get('/api/galeria', async (req, res) => {
+    try {
+        // Busca recursos (imagens e vídeos) de uma pasta específica
+        const result = await cloudinary.search
+            .expression('folder:galeria-casamento') 
+            .max_results(500) // Limita a busca para evitar sobrecarga na API
+            .execute();
 
-// ROTA 1: POST /upload - Recebe e salva os arquivos dos convidados
-app.post('/upload', upload.array('photos', 20), (req, res) => {
-    // 'photos' deve corresponder ao atributo 'name' no input do seu HTML
-    console.log(`Recebidos ${req.files.length} arquivos.`);
-    res.json({ message: 'Uploads concluídos com sucesso!', count: req.files.length });
-});
-
-// ROTA 2: GET /api/galeria - Lista os arquivos salvos
-app.get('/api/galeria', (req, res) => {
-    fs.readdir(UPLOAD_DIR, (err, files) => {
-        if (err) {
-            // Retorna um array vazio em vez de erro 500 se a pasta não for encontrada
-            if (err.code === 'ENOENT') {
-                 return res.json([]);
-            }
-            console.error('Erro ao ler pasta de uploads:', err);
-            return res.status(500).json({ error: 'Falha ao carregar a galeria.' });
-        }
-
-        // Filtra e lista apenas mídias e reverte a ordem (mais novos primeiro)
-        const mediaFiles = files
-            .filter(file => /\.(jpe?g|png|gif|mp4|mov|webp)$/i.test(file))
+        // Extrai apenas a URL segura para uso no front-end
+        const urls = result.resources
+            .map(resource => resource.secure_url)
+            // Inverte a ordem para mostrar os mais novos primeiro
             .reverse(); 
 
-        res.json(mediaFiles);
-    });
-});
+        res.json(urls);
 
-// ROTA para servir os arquivos estáticos da pasta de uploads (para o navegador ver as fotos)
-app.use('/uploads', express.static(UPLOAD_DIR));
+    } catch (error) {
+        console.error('Erro ao buscar recursos do Cloudinary:', error);
+        res.status(500).json({ error: 'Falha ao carregar a galeria da nuvem.' });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
