@@ -2,13 +2,12 @@
 // CONFIGURAÇÕES GLOBAIS
 // ===================================================================
 
-// O servidor Node.js (que fará a ponte com o Cloudinary)
 const API_URL = 'http://localhost:3000'; 
 const ITEMS_PER_PAGE = 20;               
 
 let allMedia = [];       
 let currentIndex = 0;    
-let currentMediaList = []; // Lista de TODAS as URLs carregadas no front-end
+let currentMediaList = []; // Lista de TODAS as URLs carregadas na galeria
 let currentMediaIndex = -1; // O índice da mídia atualmente aberta no modal
 
 // ===================================================================
@@ -22,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const galeria = document.getElementById('galeria-convidados');
     const uploadFeedback = document.getElementById('uploadFeedback');
     const verMaisBtn = document.getElementById('verMaisBtn');
-    const downloadBtn = document.getElementById('downloadBtn'); // Novo
+    const downloadBtn = document.getElementById('downloadBtn');
     
     // Elementos de Upload
     const fileInput = document.getElementById('file-upload');
@@ -46,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function openModal(url, isVideo) {
         modal.style.display = "block";
         
-        // Esconde e pausa o que não for ser exibido
         modalImg.style.display = 'none';
         modalVideo.style.display = 'none';
         modalVideo.pause(); 
@@ -70,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function navigateCarousel(direction) {
         let newIndex = currentMediaIndex + direction;
 
+        // Trata o looping
         if (newIndex < 0) {
             newIndex = currentMediaList.length - 1;
         } else if (newIndex >= currentMediaList.length) {
@@ -130,14 +129,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 fileLabel.textContent = 'Selecionar Fotos e Vídeos'; 
                 
-                // Faz a mensagem desaparecer após 5 segundos
+                // Faz a mensagem de feedback desaparecer após 5 segundos
                 setTimeout(() => {
                     uploadFeedback.textContent = ''; 
                     uploadFeedback.style.color = 'initial'; 
                 }, 5000); 
 
-                // Reinicializa a galeria
-                inicializarGaleria(); 
+                // --- AÇÃO CRÍTICA: Pausa de 1,5 segundos (1500ms) para o Cloudinary ---
+                setTimeout(() => {
+                    inicializarGaleria(); 
+                }, 1500); 
             })
             .catch(error => {
                 console.error('Erro no upload:', error);
@@ -219,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Inicializa a galeria na primeira carga da página
+    // Inicia a galeria na primeira carga da página
     inicializarGaleria();
 
     // Listener do botão "Ver Mais Fotos"
