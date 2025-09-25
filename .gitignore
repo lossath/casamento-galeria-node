@@ -1,0 +1,9 @@
+# Node dependencies
+node_modules
+
+# Arquivos de logs
+*.log
+
+# Fotos e vídeos de convidados (Vamos carregar eles vazios no Render)
+uploads/*
+!uploads/.gitkeep

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ana & Pedro | Nossa Galeria de Casamento</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Ana & Pedro</h1>
+            <h2>Para que as memórias durem para sempre.</h2>
+            <p>Data: 07 de Setembro de 2026</p>
+        </div>
+    </header>
+
+    <div class="main-content-wrapper"> 
+        <main class="container">
+            
+            <section class="upload-section">
+                <h3>Compartilhe sua Visão!</h3>
+                <p>Tirou aquela foto incrível? Envie-nos seus registros para nossa galeria!</p>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+    <div class="file-input-wrapper">
+    <label for="file-upload" class="custom-file-label" id="file-label">
+        Selecionar Fotos e Vídeos
+    </label>
+    
+    <input type="file" id="file-upload" name="photos" multiple required>
+</div>
+    
+    <button type="submit" class="submit-button">
+        Enviar para a Galeria
+    </button>
+</form>
+                
+                <p id="uploadFeedback" class="feedback"></p>
+            </section>
+
+            <section class="gallery-section">
+                <h2>Galeria dos Convidados</h2>
+                <div id="galeria-convidados" class="photo-grid">
+                    <p>Carregando as memórias...</p>
+                </div>
+
+                 <div class="load-more-container">
+                <button id="verMaisBtn" style="display: none;">Ver Mais Fotos</button>
+            </div>
+            </section>
+        </main>
+    
+        <footer>
+            <p>Para futuros serviços, entre em contato:</p>
+            <p><a href="mailto:augustajorgegugu@gmail.com">E-mail</a> | <a href="https://wa.me/+5519983279515">WhatsApp</a></p>
+            <p>&copy; Casamento Lorena & Osvaldino | Desenvolvido por AJEstendar | 2025</p>
+        </footer>
+    </div>
+
+    <button id="backToTopBtn" title="Voltar ao Topo">
+    &#9650; </button>
+
+   <div id="imageModal" class="modal">
+    <span class="close-btn">&times;</span>
+    
+    <a id="downloadBtn" class="download-btn" href="#" download>
+        &#x2913; Baixar Mídia
+    </a> 
+    
+    <a class="prev-btn">&#10094;</a> 
+    
+    <img class="modal-content" id="img01">
+    <video class="modal-content" id="video01" controls style="display: none;"></video>
+    
+    <a class="next-btn">&#10095;</a>
+
+</div>
+
+     <script src="script.js"></script>
+
+</body>
+</html>

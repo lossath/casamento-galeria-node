@@ -1,0 +1,368 @@
+/* RESET E FONTES */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    background-color: #f8f8f8;
+    line-height: 1.6;
+}
+
+/* VARIÁVEIS DE COR (Ajuste para as cores do seu casamento!) */
+:root {
+    --primary-color: #A0522D; /* Marrom Rústico */
+    --secondary-color: #F5F5DC; /* Bege Claro */
+    --accent-color: #FFD700; /* Dourado */
+}
+
+/* LAYOUT GERAL */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* HEADER/HERO SECTION */
+.hero {
+    background: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 4em;
+    margin-bottom: 10px;
+}
+
+.hero h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 1.5em;
+}
+
+/* SEÇÃO DE UPLOAD */
+.upload-section {
+    text-align: center;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+}
+
+/* AJUSTE ESSENCIAL: Permite que os itens fiquem lado a lado (em linha) */
+#uploadForm {
+    display: flex;
+    flex-direction: row; /* ALTERADO PARA LINHA! */
+    justify-content: center; /* Centraliza o bloco de botões */
+    align-items: center; /* Alinha os itens pela altura (no centro) */
+    gap: 20px; /* Espaçamento entre os dois botões */
+    margin-top: 20px;
+}
+
+.upload-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* ESTILO DO FORMULÁRIO */
+.file-input-wrapper {
+    /* Mantemos a configuração, mas garantimos que ele se comporte bem em linha */
+    display: inline-block; 
+    overflow: hidden;
+    position: relative;
+    /* Remover a largura fixa aqui se houver */
+}
+
+.custom-file-label {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    border: 2px solid var(--primary-color);
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.custom-file-label:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#file-upload {
+    /* Esconde o input de arquivo padrão */
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.submit-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.3s;
+}
+
+.submit-button:hover {
+    opacity: 0.85;
+}
+
+.feedback {
+    margin-top: 15px;
+    color: #4CAF50; /* Cor para sucesso */
+}
+
+/* SEÇÃO DA GALERIA */
+.gallery-section h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-family: 'Playfair Display', serif;
+}
+
+.photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.photo-grid img,
+.photo-grid video {
+    width: 100%;
+    max-width: 350px; /* Limite o tamanho da mídia */
+    height: auto;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.photo-grid img:hover,
+.photo-grid video:hover {
+    transform: scale(1.02);
+}
+
+/* FOOTER PERSONALIZADO */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    color: #888;
+    border-top: 1px solid #eee;
+    background-color: #f0f0f0; /* Fundo leve para destaque */
+}
+
+footer p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Opcional: Garante que o footer fique sempre no fim */
+.main-content-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex-grow: 1; /* Faz o conteúdo principal empurrar o footer para baixo */
+}
+
+/* Container para o botão "Ver Mais" */
+.load-more-container {
+    text-align: center; /* Centraliza o botão */
+    padding: 30px 0; /* Espaçamento acima e abaixo */
+}
+
+/* Estilo do Botão "Ver Mais Fotos" */
+#verMaisBtn {
+    background-color: var(--secondary-color); /* Bege Claro */
+    color: var(--primary-color); /* Marrom Rústico */
+    padding: 12px 30px;
+    border: 2px solid var(--primary-color); /* Borda com a cor principal */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+/* Efeito Hover (ao passar o mouse) */
+#verMaisBtn:hover {
+    background-color: var(--primary-color); /* Inverte as cores no hover */
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px); /* Efeito de leve levantamento */
+}
+
+/* BOTÃO VOLTAR AO TOPO */
+#backToTopBtn {
+    /* Posição Fixa: Fica sempre visível na tela */
+    position: fixed; 
+    bottom: 30px; /* 30px da parte inferior da tela */
+    right: 30px; /* 30px da lateral direita da tela */
+    
+    /* Esconde o botão por padrão */
+    display: none; 
+    
+    /* Estilo visual */
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%; /* Transforma em um círculo */
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0.8;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#backToTopBtn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* ESTILOS DO MODAL/LIGHTBOX */
+.modal {
+    display: none; /* Escondido por padrão */
+    position: fixed; /* Fica fixo em toda a tela */
+    z-index: 9999; /* Garante que fique acima de tudo */
+    padding-top: 60px; /* Espaçamento do topo */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    overflow: auto; /* Permite rolagem se o conteúdo for grande */
+    background-color: rgb(0,0,0); /* Cor de fundo escura */
+    background-color: rgba(0,0,0,0.9); /* Preto com 90% de opacidade */
+}
+
+/* Conteúdo (a imagem/vídeo dentro do modal) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 90%;
+    max-width: 800px; /* Limite máximo para a mídia */
+    max-height: 90%;
+}
+
+/* O botão de fechar */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* CONTINUAÇÃO DOS ESTILOS DO MODAL/LIGHTBOX */
+
+/* Estilo para os botões de navegação (Anterior e Próximo) */
+.prev-btn, .next-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -50px; /* Ajusta verticalmente para o centro */
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 10000; /* Garante que fique acima da mídia */
+}
+
+/* Posicionamento do botão "Próximo" à direita */
+.next-btn {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* Posicionamento do botão "Anterior" à esquerda */
+.prev-btn {
+    left: 0;
+    border-radius: 0 3px 3px 0;
+}
+
+/* Efeito Hover nos botões de navegação */
+.prev-btn:hover,
+.next-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ESTILO DO BOTÃO DE DOWNLOAD NO MODAL */
+.download-btn {
+    position: absolute;
+    top: 15px;
+    left: 35px; /* Posiciona no canto superior esquerdo */
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none; /* Remove o sublinhado padrão do link */
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: var(--accent-color); /* Uma cor que se destaque */
+    z-index: 10000;
+    transition: background-color 0.3s;
+}
+
+.download-btn:hover {
+    background-color: var(--primary-color); /* Escurece no hover */
+}
+
+/*
+Funcionalidade	Status	Método
+Upload Direto	OK	Servidor Node.js com Multer.
+Galeria Dinâmica	OK	Listagem de arquivos do servidor.
+Paginação	OK	Botão "Ver Mais Fotos" (a cada 20 itens).
+Carrossel/Lightbox	OK	Modal com navegação Próximo/Anterior.
+Download	OK	Botão de download no modal.
+Usabilidade	OK	Botão "Voltar ao Topo" e feedback de upload.
+
+*/
