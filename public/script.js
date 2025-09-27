@@ -226,6 +226,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Listener do botão "Ver Mais Fotos"
     verMaisBtn.addEventListener('click', exibirProximosItens);
 
+    // ===================================================================
+// LÓGICA DE DETECÇÃO DE DESLIZE (SWIPE) PARA NAVEGAÇÃO MOBILE
+// ===================================================================
+
+let touchstartX = 0;
+let touchendX = 0;
+const swipeThreshold = 50; // Distância mínima para ser considerado um deslize (em pixels)
+
+const modalContentElement = modal; // O modal em si (id='imageModal') será o alvo do toque
+
+// Função que verifica o deslize e chama a navegação
+function handleGesture() {
+    // Apenas executa se o modal estiver visível
+    if (modal.style.display !== "block") return;
+    
+    // Calcula a diferença
+    const deltaX = touchendX - touchstartX;
+
+    if (Math.abs(deltaX) > swipeThreshold) {
+        
+        // Deslize da Direita para a Esquerda: IR PARA PRÓXIMO (-1)
+        if (deltaX < 0) {
+            navigateCarousel(1); // Mudei para 1, pois é a direção positiva (próxima foto)
+        }
+        
+        // Deslize da Esquerda para a Direita: IR PARA ANTERIOR (+1)
+        if (deltaX > 0) {
+            navigateCarousel(-1); // Mudei para -1, pois é a direção negativa (foto anterior)
+        }
+    }
+}
+
+// 1. Início do toque
+modalContentElement.addEventListener('touchstart', e => {
+    touchstartX = e.changedTouches[0].screenX;
+});
+
+// 2. Fim do toque
+modalContentElement.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX;
+    handleGesture();
+});
+
+// 3. Cancela o toque (se o usuário soltar sem deslizar)
+modalContentElement.addEventListener('touchcancel', () => {
+    // Limpa os valores para evitar navegações acidentais
+    touchstartX = 0;
+    touchendX = 0;
+});
+
 
     // -------------------------------------------------------------------
     // D. LÓGICA DO CARROSSEL E MODAL

@@ -28,12 +28,22 @@ body {
 
 /* HEADER/HERO SECTION */
 .hero {
-    background: var(--primary-color);
+    background-color: var(--primary-color);
+    /* 1. Imagem de Fundo */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                      url('https://images.unsplash.com/photo-1519741497674-611481863552?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y2FzYW1lbnRvfGVufDB8fDB8fHww'); 
+    /* O linear-gradient adiciona uma camada escura para o texto branco se destacar (overlay) */
+                      
+    /* 2. Propriedades para cobrir e centralizar */
+    background-size: cover;        /* Faz a imagem cobrir todo o espaço */
+    background-position: center;   /* Centraliza a imagem no container */
+    background-repeat: no-repeat;  /* Garante que a imagem não se repita */
+
     color: white;
     text-align: center;
     padding: 100px 20px;
     margin-bottom: 40px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra mais escura para contraste */
 }
 
 .hero h1 {
@@ -339,8 +349,8 @@ footer a:hover {
 /* ESTILO DO BOTÃO DE DOWNLOAD NO MODAL */
 .download-btn {
     position: absolute;
-    top: 15px;
-    left: 35px; /* Posiciona no canto superior esquerdo */
+    top: 10px;
+    left: 40px; /* Posiciona no canto superior esquerdo */
     color: white;
     font-size: 1.1em;
     font-weight: bold;
@@ -354,6 +364,99 @@ footer a:hover {
 
 .download-btn:hover {
     background-color: var(--primary-color); /* Escurece no hover */
+}
+
+/* ======================================= */
+/* MEDIA QUERIES PARA RESPONSIVIDADE */
+/* ======================================= */
+
+@media (max-width: 768px) {
+    /* --------------------------------- */
+    /* 1. LAYOUT GERAL E HEADER/HERO */
+    /* --------------------------------- */
+    
+    .container {
+        /* Reduz o padding para usar melhor a tela */
+        padding: 10px; 
+    }
+
+    .hero {
+        /* Reduz o espaçamento do hero para não ocupar muito a tela inicial */
+        padding: 80px 10px 50px 10px; 
+        margin-bottom: 30px;
+    }
+
+    .hero h1 {
+        /* Reduz o tamanho da fonte do título principal */
+        font-size: 3em; 
+    }
+
+    .hero h2 {
+        /* Reduz o tamanho da fonte do subtítulo */
+        font-size: 1.2em; 
+    }
+
+    /* --------------------------------- */
+    /* 2. FORMULÁRIO DE UPLOAD */
+    /* --------------------------------- */
+
+    #uploadForm {
+        /* MUDA: Faz o formulário ir de "lado a lado" para "empilhado" */
+        flex-direction: column; 
+        gap: 15px; /* Ajusta o espaçamento */
+    }
+
+    .custom-file-label,
+    .submit-button {
+        /* Faz os botões ocuparem 100% da largura do formulário (que tem max-width) */
+        width: 100%; 
+        max-width: 300px; /* Garante que não fiquem gigantes em tablets */
+        padding: 12px 20px;
+    }
+    
+    /* --------------------------------- */
+    /* 3. GALERIA DE FOTOS (.photo-grid) */
+    /* --------------------------------- */
+
+    .photo-grid {
+        /* O seu photo-grid está usando flex-wrap, o que já ajuda. */
+        /* Para telas menores, vamos garantir que a mídia não passe da largura */
+        padding: 10px 0;
+        gap: 10px;
+    }
+
+    .photo-grid img,
+    .photo-grid video {
+        /* Remove o max-width fixo para que o flexbox se encarregue do tamanho */
+        max-width: none; 
+        /* Para exibir 2 itens por linha no celular: */
+        width: calc(50% - 5px); 
+        /* A regra acima garante que a largura seja 50% menos o espaçamento */
+    }
+
+    /* --------------------------------- */
+    /* 4. MODAL/LIGHTBOX */
+    /* --------------------------------- */
+    
+    /* Reposiciona o botão de fechar para não ficar na borda do celular */
+    .close-btn {
+        top: 10px; 
+        right: 20px;
+        font-size: 30px;
+    }
+
+    /* Reposiciona o botão de download */
+    .download-btn {
+        top: 10px;
+        left: 20px;
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+
+    /* Oculta as setas de navegação, pois o toque na tela é melhor para navegação */
+    .prev-btn, .next-btn {
+        display: none; 
+    }
 }
 
 /*
